@@ -6,6 +6,7 @@ export default ({ env }) => [
     name: "strapi::cors",
     config: {
       enabled: true,
+      headers: "*",
       origin: ["http://localhost:3000", "https://svitli-idei.vercel.app"], // ваші домени
       headers: "*",
     },
