@@ -9,7 +9,7 @@ export default ({ env }) => [
       headers: "*",
       origin: [
         "http://localhost:3000", // ваш локальний домен React-аплікації
-        "https://your-production-domain.vercel.app", // замініть на ваш реальний домен Vercel
+        "https://svitli-idei.vercel.app/", // замініть на ваш реальний домен Vercel
       ],
     },
   },
