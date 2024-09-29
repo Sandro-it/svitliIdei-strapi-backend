@@ -1,11 +1,22 @@
 export default ({ env }) => [
   "strapi::logger",
   "strapi::errors",
-  "strapi::security",
+  {
+    name: "strapi::security",
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          "img-src": ["'self'", "data:", "blob:", "*.cloudinary.com"],
+          "media-src": ["'self'", "data:", "blob:", "*.cloudinary.com"],
+          upgradeInsecureRequests: null,
+        },
+      },
+    },
+  },
   {
     name: "strapi::cors",
     config: {
-      enabled: true,
       origin: [
         "http://localhost:3000", // ваш локальний домен React-аплікації
         "https://svitli-idei.vercel.app", // ваш продакшн-домен
@@ -16,8 +27,6 @@ export default ({ env }) => [
         "Origin",
         "Accept",
         "X-Requested-With",
-        "Access-Control-Allow-Origin",
-        "Access-Control-Allow-Credentials",
       ],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       credentials: true,
