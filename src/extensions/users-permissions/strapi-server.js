@@ -1,0 +1,34 @@
+module.exports = (plugin) => {
+  plugin.controllers.user.updateMe = async (ctx) => {
+    const user = ctx.state.user;
+    if (!user) {
+      return ctx.unauthorized();
+    }
+
+    const allowedFields = ["username", "email", "avatar"];
+    const data = {};
+    for (const field of allowedFields) {
+      if (ctx.request.body[field] !== undefined) {
+        data[field] = ctx.request.body[field];
+      }
+    }
+
+    const updatedUser = await strapi
+      .plugin("users-permissions")
+      .service("user")
+      .edit(user.id, data);
+
+    ctx.body = updatedUser;
+  };
+
+  plugin.routes["content-api"].routes.push({
+    method: "PUT",
+    path: "/users/me",
+    handler: "user.updateMe",
+    config: {
+      policies: [],
+    },
+  });
+
+  return plugin;
+};
