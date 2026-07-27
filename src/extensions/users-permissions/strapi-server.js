@@ -21,7 +21,11 @@ module.exports = (plugin) => {
     ctx.body = updatedUser;
   };
 
-  plugin.routes["content-api"].routes.push({
+  // unshift, не push: users-permissions вже реєструє PUT /users/:id раніше
+  // в цьому ж масиві маршрутів, і Strapi зіставляє маршрути по порядку
+  // реєстрації — тож без unshift запит PUT /users/me завжди спершу
+  // потрапляв на /users/:id з "me" як буквальним id.
+  plugin.routes["content-api"].routes.unshift({
     method: "PUT",
     path: "/users/me",
     handler: "user.updateMe",
