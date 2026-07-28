@@ -3,6 +3,7 @@ module.exports = (plugin: any) => {
   console.log(">>> controllers.user keys BEFORE: " + Object.keys(plugin.controllers.user).join(","));
 
   plugin.controllers.user.updateMe = async (ctx: any) => {
+    console.log(">>> updateMe HANDLER CALLED");
     const user = ctx.state.user;
     if (!user) {
       return ctx.unauthorized();
