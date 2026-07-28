@@ -1,3 +1,5 @@
+console.log(">>> CUSTOM users-permissions strapi-server.js LOADED <<<");
+
 module.exports = (plugin) => {
   // У Strapi 5 plugin.controllers.user — це фабрика-функція ({ strapi }) => {...},
   // яка повертає об'єкт контролера, а не сам об'єкт контролера. Пряме
