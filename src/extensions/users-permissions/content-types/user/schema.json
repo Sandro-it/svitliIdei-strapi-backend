@@ -55,6 +55,11 @@
       "multiple": false,
       "required": false,
       "allowedTypes": ["images"]
+    },
+    "favorites": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product"
     }
   }
 }
