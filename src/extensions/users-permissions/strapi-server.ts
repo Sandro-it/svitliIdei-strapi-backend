@@ -1,44 +1,22 @@
 module.exports = (plugin: any) => {
-  console.log(">>> EXTENSION LOADED, controllers.user type: " + typeof plugin.controllers.user);
-  console.log(">>> controllers.user keys BEFORE: " + Object.keys(plugin.controllers.user).join(","));
+  const originalUpdate = plugin.controllers.user.update;
 
-  plugin.controllers.user.updateMe = async (ctx: any) => {
-    console.log(">>> updateMe HANDLER CALLED");
+  plugin.controllers.user.update = async (ctx: any) => {
     const user = ctx.state.user;
-    if (!user) {
-      return ctx.unauthorized();
-    }
 
-    const allowedFields = ["username", "email", "avatar"];
-    const data: Record<string, any> = {};
-    for (const field of allowedFields) {
-      if (ctx.request.body[field] !== undefined) {
-        data[field] = ctx.request.body[field];
+    if (ctx.params.id === "me") {
+      if (!user) {
+        return ctx.unauthorized();
       }
+      ctx.params.id = String(user.id);
     }
 
-    const updatedUser = await strapi
-      .plugin("users-permissions")
-      .service("user")
-      .edit(user.id, data);
+    if (!user || ctx.params.id !== String(user.id)) {
+      return ctx.forbidden();
+    }
 
-    ctx.body = updatedUser;
+    return originalUpdate(ctx);
   };
-
-  console.log(">>> controllers.user keys AFTER: " + Object.keys(plugin.controllers.user).join(","));
-  console.log(">>> routes BEFORE unshift, count: " + plugin.routes["content-api"].routes.length);
-
-  plugin.routes["content-api"].routes.unshift({
-    method: "PUT",
-    path: "/users/me",
-    handler: "user.updateMe",
-    config: {
-      policies: [],
-    },
-  });
-
-  console.log(">>> routes AFTER unshift, count: " + plugin.routes["content-api"].routes.length);
-  console.log(">>> first route now: " + JSON.stringify(plugin.routes["content-api"].routes[0]));
 
   return plugin;
 };
