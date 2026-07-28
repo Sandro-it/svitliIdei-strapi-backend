@@ -1,24 +1,38 @@
 module.exports = (plugin) => {
-  plugin.controllers.user.updateMe = async (ctx) => {
-    const user = ctx.state.user;
-    if (!user) {
-      return ctx.unauthorized();
-    }
+  // У Strapi 5 plugin.controllers.user — це фабрика-функція ({ strapi }) => {...},
+  // яка повертає об'єкт контролера, а не сам об'єкт контролера. Пряме
+  // присвоєння plugin.controllers.user.updateMe = ... додає властивість на
+  // саму функцію-фабрику, а не на об'єкт, який вона повертає — тому роутер
+  // (що викликає plugin.controllers.user({ strapi }).updateMe) ніколи не
+  // бачив цей метод. Обгортаємо фабрику, щоб додати updateMe до її результату.
+  const originalUserFactory = plugin.controllers.user;
 
-    const allowedFields = ["username", "email", "avatar"];
-    const data = {};
-    for (const field of allowedFields) {
-      if (ctx.request.body[field] !== undefined) {
-        data[field] = ctx.request.body[field];
+  plugin.controllers.user = ({ strapi }) => {
+    const originalUser = originalUserFactory({ strapi });
+
+    originalUser.updateMe = async (ctx) => {
+      const user = ctx.state.user;
+      if (!user) {
+        return ctx.unauthorized();
       }
-    }
 
-    const updatedUser = await strapi
-      .plugin("users-permissions")
-      .service("user")
-      .edit(user.id, data);
+      const allowedFields = ["username", "email", "avatar"];
+      const data = {};
+      for (const field of allowedFields) {
+        if (ctx.request.body[field] !== undefined) {
+          data[field] = ctx.request.body[field];
+        }
+      }
 
-    ctx.body = updatedUser;
+      const updatedUser = await strapi
+        .plugin("users-permissions")
+        .service("user")
+        .edit(user.id, data);
+
+      ctx.body = updatedUser;
+    };
+
+    return originalUser;
   };
 
   // unshift, не push: users-permissions вже реєструє PUT /users/:id раніше
