@@ -1,4 +1,7 @@
 module.exports = (plugin: any) => {
+  console.log(">>> EXTENSION LOADED, controllers.user type: " + typeof plugin.controllers.user);
+  console.log(">>> controllers.user keys BEFORE: " + Object.keys(plugin.controllers.user).join(","));
+
   plugin.controllers.user.updateMe = async (ctx: any) => {
     const user = ctx.state.user;
     if (!user) {
@@ -21,6 +24,9 @@ module.exports = (plugin: any) => {
     ctx.body = updatedUser;
   };
 
+  console.log(">>> controllers.user keys AFTER: " + Object.keys(plugin.controllers.user).join(","));
+  console.log(">>> routes BEFORE unshift, count: " + plugin.routes["content-api"].routes.length);
+
   plugin.routes["content-api"].routes.unshift({
     method: "PUT",
     path: "/users/me",
@@ -29,6 +35,9 @@ module.exports = (plugin: any) => {
       policies: [],
     },
   });
+
+  console.log(">>> routes AFTER unshift, count: " + plugin.routes["content-api"].routes.length);
+  console.log(">>> first route now: " + JSON.stringify(plugin.routes["content-api"].routes[0]));
 
   return plugin;
 };
