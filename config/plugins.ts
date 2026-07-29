@@ -25,6 +25,9 @@ export default ({ env }) => ({
         host: "smtp.gmail.com",
         port: 465,
         secure: true,
+        connectionTimeout: 8000,
+        greetingTimeout: 8000,
+        socketTimeout: 8000,
         auth: {
           user: env("GMAIL_USER"),
           pass: env("GMAIL_APP_PASSWORD"),
