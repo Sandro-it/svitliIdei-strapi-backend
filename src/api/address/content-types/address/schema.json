@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "addresses",
+  "info": {
+    "singularName": "address",
+    "pluralName": "addresses",
+    "displayName": "Address",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "recipientName": {
+      "type": "string",
+      "required": true
+    },
+    "recipientPhone": {
+      "type": "string",
+      "required": true
+    },
+    "deliveryMethod": {
+      "type": "enumeration",
+      "enum": ["branch", "postomat", "courier"],
+      "default": "branch"
+    },
+    "novaPoshtaCity": {
+      "type": "string"
+    },
+    "novaPoshtaWarehouse": {
+      "type": "string"
+    },
+    "isDefault": {
+      "type": "boolean",
+      "default": false
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}
