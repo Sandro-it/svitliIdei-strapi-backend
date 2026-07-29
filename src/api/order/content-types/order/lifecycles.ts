@@ -28,9 +28,8 @@ export default {
       .filter(Boolean)
       .join("\n");
 
-    // Fire-and-forget: не чекаємо (await) жодне з двох сповіщень,
-    // щоб повільний/зависаючий SMTP чи Telegram ніколи не блокував відповідь клієнту.
-
+    // Fire-and-forget: не чекаємо (await) на відповідь Telegram,
+    // щоб повільний/недоступний Telegram ніколи не блокував відповідь клієнту.
     (async () => {
       try {
         const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -54,18 +53,6 @@ export default {
         }
       } catch (error) {
         strapi.log.error("Помилка відправки Telegram-сповіщення:", error);
-      }
-    })();
-
-    (async () => {
-      try {
-        await strapi.plugins["email"].services.email.send({
-          to: process.env.ORDER_NOTIFICATION_EMAIL,
-          subject: `Нове замовлення №${result.id} — SvitliIdei`,
-          text: message,
-        });
-      } catch (error) {
-        strapi.log.error("Помилка відправки email-сповіщення:", error);
       }
     })();
   },

@@ -18,25 +18,4 @@ export default ({ env }) => ({
       },
     },
   },
-  email: {
-    config: {
-      provider: "nodemailer",
-      providerOptions: {
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        connectionTimeout: 8000,
-        greetingTimeout: 8000,
-        socketTimeout: 8000,
-        auth: {
-          user: env("GMAIL_USER"),
-          pass: env("GMAIL_APP_PASSWORD"),
-        },
-      },
-      settings: {
-        defaultFrom: env("GMAIL_USER"),
-        defaultReplyTo: env("GMAIL_USER"),
-      },
-    },
-  },
 });
