@@ -60,6 +60,10 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::product.product"
+    },
+    "phone": {
+      "type": "string",
+      "required": false
     }
   }
 }
