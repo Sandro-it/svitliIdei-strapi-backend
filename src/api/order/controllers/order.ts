@@ -11,14 +11,20 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
     if (!ctx.request.body.data) {
       ctx.request.body = { data: ctx.request.body };
     }
+    // Strapi's content-API create validation rejects a "user" key when it
+    // targets plugin::users-permissions.user (anti-hijacking guard), so we
+    // can't set it in the create payload — attach it afterwards instead.
+    delete ctx.request.body.data.user;
 
-    if (user) {
-      ctx.request.body.data.user = user.id;
-    } else {
-      delete ctx.request.body.data.user;
+    const response = await super.create(ctx);
+
+    if (user && response?.data?.id) {
+      await strapi.entityService.update('api::order.order', response.data.id, {
+        data: { user: user.id },
+      });
     }
 
-    return await super.create(ctx);
+    return response;
   },
 
   async find(ctx) {
