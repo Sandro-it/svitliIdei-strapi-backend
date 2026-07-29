@@ -70,10 +70,13 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
       return ctx.notFound();
     }
 
-    if (user && order.user && order.user.id === user.id) {
-      return await super.findOne(ctx);
+    if (!user || !order.user || order.user.id !== user.id) {
+      return ctx.forbidden('Ви не можете переглядати це замовлення.');
     }
 
-    return ctx.forbidden('Ви не можете переглядати це замовлення.');
+    // Not delegating to super.findOne(ctx): Strapi 5's core findOne route
+    // resolves ctx.params.id as a documentId, but we looked the order up
+    // by numeric id via entityService — return what we already fetched.
+    return { data: order, meta: {} };
   },
 }));
