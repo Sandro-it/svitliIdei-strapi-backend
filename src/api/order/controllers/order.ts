@@ -77,6 +77,10 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
     // Not delegating to super.findOne(ctx): Strapi 5's core findOne route
     // resolves ctx.params.id as a documentId, but we looked the order up
     // by numeric id via entityService — return what we already fetched.
-    return { data: order, meta: {} };
+    // Drop the populated "user" relation before responding: entityService
+    // results skip Strapi's normal output sanitization, so the raw user
+    // object (including password hash and tokens) would otherwise leak.
+    const { user: _omitUser, ...safeOrder } = order;
+    return { data: safeOrder, meta: {} };
   },
 }));
