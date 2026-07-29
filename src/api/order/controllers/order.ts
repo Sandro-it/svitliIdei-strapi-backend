@@ -37,15 +37,25 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
       };
     }
 
-    ctx.query = {
-      ...ctx.query,
-      filters: {
-        ...((ctx.query.filters as object) || {}),
-        user: user.id,
+    // Same "Invalid key user" content-API validation restriction as
+    // create() applies to filters on this relation, so we can't pass
+    // filters.user through super.find(ctx) either — query directly instead.
+    const orders = await strapi.entityService.findMany('api::order.order', {
+      filters: { user: user.id },
+      sort: (ctx.query.sort as any) || { createdAt: 'desc' },
+    });
+
+    return {
+      data: orders,
+      meta: {
+        pagination: {
+          page: 1,
+          pageSize: orders.length,
+          pageCount: 1,
+          total: orders.length,
+        },
       },
     };
-
-    return await super.find(ctx);
   },
 
   async findOne(ctx) {
